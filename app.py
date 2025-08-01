@@ -71,4 +71,35 @@ try:
     )
     st.plotly_chart(fig, use_container_width=True)
 
-    # --- KPIs -
+    # --- KPIs ---
+    st.markdown("### 🔢 Forecast Summary")
+
+    latest = df_range.iloc[-1]
+    prev = df_range.iloc[-2] if len(df_range) > 1 else latest
+    delta = latest['yhat'] - prev['yhat']
+
+    col1, col2 = st.columns(2)
+    col1.metric("Latest Prediction", f"{latest['yhat']:,.2f}", f"{delta:,.2f}")
+    col2.metric("Forecast Date", latest['ds'].strftime('%b %Y'))
+
+    # --- Table ---
+    if show_table:
+        st.markdown("### 📋 Forecast Table")
+        st.dataframe(df_range[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].rename(columns={
+            'ds': 'Date', 'yhat': 'Prediction', 'yhat_lower': 'Lower Bound', 'yhat_upper': 'Upper Bound'
+        }), use_container_width=True)
+
+    # --- Download Forecast Button ---
+    def convert_df_to_csv(df):
+        return df.to_csv(index=False).encode('utf-8')
+
+    st.download_button(
+        label="⬇️ Download Forecast CSV",
+        data=convert_df_to_csv(df),
+        file_name="sales_forecast.csv",
+        mime='text/csv',
+    )
+
+except Exception as e:
+    st.error("⚠️ Could not load forecast. Make sure `forecast.csv` exists or upload a valid file.")
+    st.exception(e)
