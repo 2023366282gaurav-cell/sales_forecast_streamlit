@@ -22,7 +22,7 @@ try:
     if uploaded_file:
         df = load_forecast_data(uploaded_file)
     else:
-        df = load_forecast_data("forecast(1).csv")  # fallback
+        df = load_forecast_data("forecast (1).csv")  # fallback
 
     # --- Convert pandas Timestamp to native Python datetime for Streamlit slider ---
     min_date, max_date = df['ds'].min(), df['ds'].max()
@@ -103,4 +103,5 @@ try:
 except Exception as e:
     st.error("⚠️ Could not load forecast. Make sure `forecast.csv` exists or upload a valid file.")
     st.exception(e)
+
 
